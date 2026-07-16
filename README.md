@@ -1,5 +1,7 @@
 # Quant Factor Lab
 
+[**Open the live application**](https://quant-factor-lab-e5njhisnnujmsbatyy9dyz.streamlit.app/)
+
 A deployable cross-market factor research workbench for **China A-shares and US equities**.
 It turns an economic hypothesis into a cost-aware portfolio through one shared research stack.
 
