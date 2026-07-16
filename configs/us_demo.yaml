@@ -1,0 +1,21 @@
+market: us
+start_date: "2015-01-01"
+end_date: "2023-12-31"
+n_stocks: 60
+seed: 7
+
+# Classic US cross-section candidates (FF-style + momentum + quality + low-vol)
+factors:
+  - ep
+  - bp
+  - momentum_12_1
+  - reverse_1m
+  - volatility_20
+  - turnover_20
+  - roe
+  - size_log_mcap
+
+rebalance: monthly
+n_layers: 5
+top_quantile: 0.2
+transaction_cost_bps: 5   # US large-cap frictions typically lower than A-share retail

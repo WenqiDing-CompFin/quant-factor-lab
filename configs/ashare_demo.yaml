@@ -1,0 +1,21 @@
+market: ashare
+start_date: "2018-01-01"
+end_date: "2023-12-31"
+n_stocks: 80
+seed: 42
+
+# Phase-1 teaching factors (value / momentum / quality / size / volatility)
+factors:
+  - ep          # earnings yield ~ E/P
+  - bp          # book-to-price
+  - momentum_12_1
+  - reverse_1m
+  - volatility_20
+  - turnover_20
+  - roe
+  - size_log_mcap
+
+rebalance: monthly
+n_layers: 5
+top_quantile: 0.2
+transaction_cost_bps: 10
