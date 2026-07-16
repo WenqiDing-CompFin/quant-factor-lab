@@ -1,4 +1,4 @@
-"""Simple monthly long-only backtest for teaching."""
+"""Monthly portfolio engines used by the research dashboard."""
 
 from __future__ import annotations
 
@@ -48,3 +48,22 @@ def run_long_only_backtest(
     out = pd.DataFrame(records).set_index("date").sort_index()
     out["nav"] = (1.0 + out["ret_net"]).cumprod()
     return out
+
+
+def run_equal_weight_benchmark(
+    factor_df: pd.DataFrame,
+    ret_col: str = "ret_fwd_1m",
+) -> pd.DataFrame:
+    """Return an equal-weight universe benchmark on the same monthly calendar."""
+    monthly = (
+        factor_df.dropna(subset=[ret_col])
+        .groupby("date", sort=True)[ret_col]
+        .mean()
+        .rename("ret_net")
+        .to_frame()
+    )
+    monthly["ret_gross"] = monthly["ret_net"]
+    monthly["turnover"] = 0.0
+    monthly["n_holdings"] = factor_df.groupby("date")["symbol"].nunique()
+    monthly["nav"] = (1.0 + monthly["ret_net"]).cumprod()
+    return monthly

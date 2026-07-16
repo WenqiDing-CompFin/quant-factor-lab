@@ -1,91 +1,80 @@
 # Quant Factor Lab
 
-**A-share + US equities** factor research bench.  
-End-to-end educational pipeline for learning quant methods and building a Financial Engineering (金工 / MFE) application portfolio.
+A deployable cross-market factor research workbench for **China A-shares and US equities**.
+It turns an economic hypothesis into a cost-aware portfolio through one shared research stack.
 
-Repo: https://github.com/WenqiDing-CompFin/quant-factor-lab
+## What it includes
 
-[中文说明](#中文) · [English](#english)
+- Cross-sectional value, momentum, quality, size, volatility, and liquidity factors
+- Winsorization and direction-aligned z-score normalization
+- Rank IC, ICIR, t-statistics, positive-IC ratio, and quantile return tests
+- Factor redundancy diagnostics with average Spearman correlation
+- Monthly long-only portfolio construction with explicit transaction costs
+- Equal-weight benchmark, NAV, drawdown, turnover, VaR, CVaR, Sharpe, Sortino, and Calmar
+- A unified Streamlit dashboard for both markets
+- Reproducible synthetic panels so the full project runs without API keys
 
----
-
-<a id="english"></a>
-## English
-
-### What this repo demonstrates
-1. **Factor selection from first principles** — economic story → definition → empirical tests  
-2. **Single-factor research** — Rank IC, ICIR, quantile-layer returns  
-3. **Factor correlation** — avoid stacking redundant signals  
-4. **Multi-factor combination** — direction-aligned z-score blend  
-5. **Cost-aware long-only backtest** — turnover + bps cost proxy  
-6. **Interactive visualization** — Streamlit dashboards (A-share & US)  
-
-Both markets share one research stack under `src/quantlab/`. Demos use **reproducible synthetic panels** with planted weak signals so GitHub visitors can run offline. Swap data loaders later without rewriting IC / backtest code.
-
-### Quickstart — US module
+## Run locally
 
 ```bash
-cd quant-factor-lab
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 pip install -e .
-
-python scripts/us_01_build_demo_data.py
-python scripts/us_02_select_and_test_factors.py
-python scripts/us_03_multi_factor_backtest.py
-streamlit run app/streamlit_us.py
+streamlit run streamlit_app.py
 ```
 
-### Quickstart — A-share module
+Run the tests with:
 
 ```bash
-python scripts/01_build_demo_data.py
-python scripts/02_select_and_test_factors.py
-python scripts/03_multi_factor_backtest.py
-streamlit run app/streamlit_app.py
+pip install -e ".[dev]"
+pytest
 ```
 
-### Learn in order
-| Lesson | Topic |
-|---|---|
-| [`lessons/01_what_is_a_factor.md`](lessons/01_what_is_a_factor.md) | What is a factor? |
-| [`lessons/02_selecting_factors.md`](lessons/02_selecting_factors.md) | How to select factors |
-| [`lessons/03_single_factor_test.md`](lessons/03_single_factor_test.md) | IC & quantile tests |
-| [`lessons/04_us_module.md`](lessons/04_us_module.md) | US equities track |
+## Research flow
 
-### Project layout
 ```text
-configs/            # ashare_demo.yaml, us_demo.yaml
-lessons/            # teaching notes
-scripts/            # A-share + US pipeline entrypoints
-app/                # streamlit_app.py (CN) · streamlit_us.py (US)
-src/quantlab/
-  data/             # synthetic A-share & US panels
-  factors/          # catalog + compute
-  research/         # IC / layers / correlation
-  backtest/         # monthly long-only engine
-  portfolio/        # multi-factor combine
+Economic story
+    -> raw factor definition
+    -> cross-sectional winsorization and z-score
+    -> Rank IC / ICIR and quantile tests
+    -> correlation diagnostics
+    -> equal-weight multi-factor score
+    -> top-quantile portfolio
+    -> transaction-cost-aware backtest
 ```
 
-### Roadmap
-- [x] Phase 1: A-share teaching pipeline + dashboard  
-- [x] Phase 3: US equities parallel module (same research API)  
-- [x] Factor correlation heatmap (US dashboard / scripts)  
-- [ ] Industry / size neutralization  
-- [ ] Real-data adapters (akshare / CRSP-style / Yahoo)
+## Project structure
 
-### Disclaimer
-For education and research methodology demonstration only. Not investment advice. Synthetic data is not a claim about live market premia.
+```text
+streamlit_app.py     # Unified deployed dashboard
+configs/             # A-share and US research settings
+src/quantlab/
+  data/              # Reproducible market-like panels
+  factors/           # Factor catalog and transformations
+  research/          # IC, quantile, and correlation diagnostics
+  portfolio/         # Multi-factor combination
+  backtest/          # Strategy, benchmark, and risk metrics
+tests/               # End-to-end research tests
+lessons/             # Supporting factor-research notes
+```
+
+## Data policy
+
+The deployed application intentionally uses deterministic synthetic panels with planted weak
+signals. This keeps the research reproducible, avoids redistribution restrictions, and makes the
+methodology auditable without an API key. Production adapters can replace `src/quantlab/data/`
+without changing the factor, research, portfolio, or backtest APIs.
+
+## Disclaimer
+
+For education and research demonstration only. The displayed results are not live market data,
+are not forecasts, and are not investment advice.
 
 ---
 
-<a id="中文"></a>
-## 中文
+## 中文说明
 
-### 这是什么
-从零学习因子选股的完整实验台：**A 股 + 美股** 两套可运行模块，同一套研究代码（选因子 → IC/分层 → 相关 → 多因子合成 → 扣成本回测 → Streamlit 可视化），适合金工 / MFE 申请作品集。
-
-### 美股怎么跑
-见上文 **Quickstart — US module**，或读 [`lessons/04_us_module.md`](lessons/04_us_module.md)。
-
-### 给申请材料的一句话
-> Built a market-agnostic cross-sectional factor research pipeline (selection → IC/ICIR → quantile sorts → correlation diagnostics → multi-factor portfolio → cost-aware backtest) with interactive dashboards for both China A-shares and US equities.
+这是一个覆盖 **A 股与美股** 的跨市场多因子研究项目。统一界面展示因子 IC、分层收益、
+相关性、组合净值、回撤、换手率和尾部风险。在线版本使用可复现的合成面板，确保任何人
+无需 API Key 即可运行和审阅完整研究流程；结果不代表真实市场收益，也不构成投资建议。
