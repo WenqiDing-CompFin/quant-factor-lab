@@ -16,7 +16,7 @@
 ## GitHub
 https://github.com/WenqiDing-CompFin/quant-factor-lab
 
-## 申请材料建议产出
+## 研究报告建议产出
 1. 仓库链接 + README  
 2. A 股 / 美股看板截图（IC、分层、相关、净值）  
 3. 一页 PDF：问题 → 方法 → 结果 → 局限（合成数据 / 过拟合）

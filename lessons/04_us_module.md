@@ -25,5 +25,5 @@ python scripts/us_03_multi_factor_backtest.py
 streamlit run app/streamlit_us.py
 ```
 
-## Admissions talking point
+## Research summary
 > “I built a market-agnostic factor research stack and instantiated it on both China A-shares and US equities, highlighting institutional differences such as reversal vs momentum and transaction costs.”

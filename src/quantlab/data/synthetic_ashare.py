@@ -1,7 +1,7 @@
 """Synthetic A-share-like panel for offline teaching and demos.
 
 Why synthetic first?
-- No API key / network required — reproducible for GitHub + admissions portfolio
+- No API key / network required — reproducible for GitHub and offline research
 - Known factor–return relationships so you can verify the research pipeline
 - Later swap this module for akshare / Wind / Tushare loaders without changing
   factor / IC / backtest code
