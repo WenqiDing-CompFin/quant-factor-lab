@@ -29,14 +29,13 @@ Factor investing is a cornerstone of quantitative equity strategies. This projec
 ---
 
 ## Research Pipeline
-
+---
 
 ## Quick Start
 
 ### Run locally
 
 ### Run tests
-
 ---
 
 ## Project Structure
@@ -63,6 +62,7 @@ Factor investing is a cornerstone of quantitative equity strategies. This projec
 The deployed application uses **deterministic synthetic panels with planted weak signals**. This keeps the research reproducible, avoids redistribution restrictions, and makes the full methodology auditable without an API key.
 
 **Why synthetic first?**
+
 - ✅ Anyone can run the complete research pipeline in one click
 - ✅ No API key / network required — ideal for admissions portfolio review
 - ✅ Known factor–return relationships let you verify each research step
@@ -92,3 +92,9 @@ The deployed application uses **deterministic synthetic panels with planted weak
 
 **Wenqi Ding**  
 GitHub: [@WenqiDing-CompFin](https://github.com/WenqiDing-CompFin)
+
+---
+
+## 中文说明
+
+这是一个覆盖 **A 股与美股** 的跨市场多因子研究项目。统一界面展示因子 IC、分层收益、相关性、组合净值、回撤、换手率和尾部风险。在线版本使用可复现的合成面板，确保任何人无需 API Key 即可运行和审阅完整研究流程；结果不代表真实市场收益，也不构成投资建议。
