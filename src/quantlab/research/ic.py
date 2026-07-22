@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 
 
 def _rank_ic(x: pd.Series, y: pd.Series) -> float:
-    if x.notna().sum() < 5:
+    usable = pd.concat([x, y], axis=1).dropna()
+    if len(usable) < 5:
         return np.nan
-    return float(stats.spearmanr(x, y, nan_policy="omit").statistic)
+    # Spearman correlation is Pearson correlation of the two within-date ranks.
+    return float(usable.iloc[:, 0].rank(method="average").corr(
+        usable.iloc[:, 1].rank(method="average")
+    ))
 
 
 def factor_ic_series(factor_df: pd.DataFrame, factor: str, ret_col: str = "ret_fwd_1m") -> pd.Series:

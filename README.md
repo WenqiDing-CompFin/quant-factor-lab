@@ -1,10 +1,26 @@
-# Quant Factor Lab
+# Quant Factor Lab: Interactive Tutorial Companion
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://quant-factor-lab-e5njhisnnujmsbatyy9dyz.streamlit.app/)
+[![CI](https://github.com/WenqiDing-CompFin/quant-factor-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/WenqiDing-CompFin/quant-factor-lab/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-A reproducible, cross-market equity factor research system for **China A-shares and US equities**.
-The project turns economic hypotheses into testable signals, validates them cross-sectionally, and
-translates them into cost-aware portfolios through one shared research stack.
+> **Portfolio role:** this repository is the interactive teaching and exploration
+> layer. The flagship, formally documented research pipeline is
+> [quant-factor-research](https://github.com/WenqiDing-CompFin/quant-factor-research),
+> which contains the narrower methodology, failure register, tests, and committed
+> research artifacts.
+
+A reproducible tutorial for exploring equity factors across **China A-shares and
+US equities**. It turns economic hypotheses into testable signals, validates them
+cross-sectionally, and translates them into cost-aware portfolios through an
+interactive Streamlit interface.
+
+## How the Two Quant Repositories Differ
+
+| Repository | Primary audience | Main purpose |
+|---|---|---|
+| `quant-factor-research` | Reviewers, researchers, interviewers | Auditable methodology, explicit claim boundaries, regression tests, and saved research outputs |
+| `quant-factor-lab` | Learners and interactive users | Guided lessons, cross-market controls, and a deployed dashboard for exploring the workflow |
 
 ## Overview
 
@@ -210,7 +226,6 @@ and are not investment advice.
 
 ## 中文简介
 
-Quant Factor Lab 是一个覆盖 **A 股与美股** 的跨市场多因子研究系统。项目使用统一代码完成
-因子标准化、Rank IC 与分层检验、相关性诊断、多因子组合、交易成本回测和风险分析。在线
-版本采用可复现的合成面板，重点展示完整、透明且可审计的研究流程；结果不代表真实市场
-收益，也不构成投资建议。
+Quant Factor Lab 是一个覆盖 A 股与美股的交互式多因子研究教程。项目使用统一代码完成因子标准化、Rank IC 与分层检验、相关性诊断、多因子组合、交易成本回测和风险分析。
+
+在线版本采用可复现的合成面板，重点展示透明、可审计的研究流程；结果不代表真实市场收益，也不构成投资建议。正式研究方法、失败分析和可复现结果请查看 [`quant-factor-research`](https://github.com/WenqiDing-CompFin/quant-factor-research)。
