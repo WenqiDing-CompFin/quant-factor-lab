@@ -1,14 +1,14 @@
-# Quant Factor Lab: Interactive Tutorial Companion
+# Quant Factor Lab: Interactive Demo Companion
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://quant-factor-lab-e5njhisnnujmsbatyy9dyz.streamlit.app/)
 [![CI](https://github.com/WenqiDing-CompFin/quant-factor-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/WenqiDing-CompFin/quant-factor-lab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **Portfolio role:** this repository is the interactive teaching and exploration
-> layer. The flagship, formally documented research pipeline is
+> **Portfolio role:** this repository is the interactive demo and teaching layer.
+> For applications and CVs, use only the flagship repository link:
 > [quant-factor-research](https://github.com/WenqiDing-CompFin/quant-factor-research),
-> which contains the narrower methodology, failure register, tests, and committed
-> research artifacts.
+> which contains the formal methodology, failure register, tests, real-data
+> validation path, and committed research artifacts.
 
 A reproducible tutorial for exploring equity factors across **China A-shares and
 US equities**. It turns economic hypotheses into testable signals, validates them
@@ -20,7 +20,7 @@ interactive Streamlit interface.
 | Repository | Primary audience | Main purpose |
 |---|---|---|
 | `quant-factor-research` | Reviewers, researchers, interviewers | Auditable methodology, explicit claim boundaries, regression tests, and saved research outputs |
-| `quant-factor-lab` | Learners and interactive users | Guided lessons, cross-market controls, and a deployed dashboard for exploring the workflow |
+| `quant-factor-lab` | Demo visitors and learners | Guided lessons, cross-market controls, and a deployed dashboard for exploring the workflow |
 
 ## Overview
 

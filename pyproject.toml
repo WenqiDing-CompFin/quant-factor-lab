@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quantlab"
 version = "0.1.0"
-description = "Interactive A-share and US equity factor research tutorial."
+description = "Interactive demo companion for an auditable equity factor research project."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
