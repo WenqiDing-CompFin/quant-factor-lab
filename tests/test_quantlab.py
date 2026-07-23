@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
 import numpy as np
 import pandas as pd
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 from quantlab.backtest import (
     performance_stats,
@@ -62,3 +69,24 @@ def test_transaction_cost_reduces_nav() -> None:
     costly = run_long_only_backtest(combined, "score_combo", cost_bps=25)
 
     assert costly["nav"].iloc[-1] < free["nav"].iloc[-1]
+
+
+def test_turnover_uses_return_drifted_weights() -> None:
+    frame = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2020-01-31"] * 2 + ["2020-02-29"] * 2),
+            "symbol": ["A", "B", "A", "B"],
+            "score": [2.0, 1.0, 2.0, 1.0],
+            "ret_fwd_1m": [0.20, 0.0, 0.0, 0.0],
+        }
+    )
+    result = run_long_only_backtest(
+        frame, "score", top_quantile=1.0, cost_bps=0
+    )
+    assert result.iloc[0]["turnover"] == 1.0
+    expected_pretrade_a = 0.6 / 1.1
+    expected_pretrade_b = 0.5 / 1.1
+    expected_turnover = 0.5 * (
+        abs(0.5 - expected_pretrade_a) + abs(0.5 - expected_pretrade_b)
+    )
+    assert result.iloc[1]["turnover"] == pytest.approx(expected_turnover)

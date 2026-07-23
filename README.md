@@ -31,7 +31,9 @@ assumptions remain configurable, while the research logic stays comparable and a
 
 The deployed dashboard uses deterministic synthetic panels with deliberately weak factor-return
 relationships. This makes every result reproducible without credentials or proprietary data and
-keeps the focus on research design rather than data access.
+keeps the focus on research design rather than data access. The interface labels that boundary at
+the top of every view and links directly to the flagship repository's committed official
+Fama-French evidence.
 
 ## What the system covers
 
@@ -42,7 +44,7 @@ keeps the focus on research design rather than data access.
 | **Preprocessing** | Cross-sectional winsorization, z-scoring, and direction alignment |
 | **Diagnostics** | Rank IC, ICIR, t-statistic, positive-IC ratio, quantile returns, and factor correlation |
 | **Portfolio** | Equal-weight multi-factor score and top-quantile long-only selection |
-| **Backtest** | Monthly rebalancing, one-way turnover, explicit transaction costs, and equal-weight benchmark |
+| **Backtest** | Monthly rebalancing, return-drifted weight turnover, explicit transaction costs, and equal-weight benchmark |
 | **Risk** | Annualized return and volatility, Sharpe, Sortino, Calmar, drawdown, VaR, and CVaR |
 | **Interface** | Interactive market controls, factor analysis, holdings, sector exposure, and CSV export |
 

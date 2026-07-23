@@ -18,11 +18,15 @@ def _rank_ic(x: pd.Series, y: pd.Series) -> float:
 
 def factor_ic_series(factor_df: pd.DataFrame, factor: str, ret_col: str = "ret_fwd_1m") -> pd.Series:
     """Cross-sectional Rank IC each date: corr(rank(factor), rank(forward return))."""
-    ic = (
-        factor_df.groupby("date", group_keys=False)
-        .apply(lambda g: _rank_ic(g[factor], g[ret_col]), include_groups=False)
+    ic = pd.Series(
+        {
+            date: _rank_ic(group[factor], group[ret_col])
+            for date, group in factor_df.groupby("date", sort=True)
+        },
+        name=factor,
+        dtype=float,
     )
-    ic.name = factor
+    ic.index.name = "date"
     return ic
 
 

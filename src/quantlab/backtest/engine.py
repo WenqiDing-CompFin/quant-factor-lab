@@ -19,20 +19,25 @@ def run_long_only_backtest(
     ret_gross, turnover, ret_net, nav
     """
     records = []
-    prev_holdings: set[str] = set()
+    pretrade_weights: dict[str, float] = {}
 
     for dt, g in factor_df.groupby("date"):
         g = g.dropna(subset=[factor, ret_col])
         if g.empty:
             continue
         k = max(1, int(np.ceil(len(g) * top_quantile)))
-        held = set(g.nlargest(k, factor)["symbol"])
-        # turnover ≈ one-way fraction of names changed
-        if prev_holdings:
-            turnover = 1.0 - len(held & prev_holdings) / max(len(prev_holdings), 1)
+        selected = g.nlargest(k, factor)[["symbol", ret_col]].copy()
+        target_weight = 1.0 / k
+        target_weights = dict.fromkeys(selected["symbol"], target_weight)
+        if pretrade_weights:
+            names = set(pretrade_weights).union(target_weights)
+            turnover = 0.5 * sum(
+                abs(target_weights.get(name, 0.0) - pretrade_weights.get(name, 0.0))
+                for name in names
+            )
         else:
-            turnover = 1.0
-        ret_gross = float(g.loc[g["symbol"].isin(held), ret_col].mean())
+            turnover = sum(target_weights.values())
+        ret_gross = float(selected[ret_col].mean())
         cost = turnover * (cost_bps / 10000.0)
         records.append(
             {
@@ -40,10 +45,19 @@ def run_long_only_backtest(
                 "ret_gross": ret_gross,
                 "turnover": turnover,
                 "ret_net": ret_gross - cost,
-                "n_holdings": len(held),
+                "n_holdings": len(selected),
             }
         )
-        prev_holdings = held
+        end_values = {
+            row.symbol: target_weight * (1.0 + row.return_value)
+            for row in selected.rename(columns={ret_col: "return_value"}).itertuples(
+                index=False
+            )
+        }
+        total_end_value = sum(end_values.values())
+        pretrade_weights = {
+            symbol: value / total_end_value for symbol, value in end_values.items()
+        }
 
     out = pd.DataFrame(records).set_index("date").sort_index()
     out["nav"] = (1.0 + out["ret_net"]).cumprod()

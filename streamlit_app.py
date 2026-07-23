@@ -51,45 +51,10 @@ COLORS = {
     "grid": "rgba(104, 112, 118, 0.18)",
 }
 
-st.set_page_config(page_title="Quant Factor Lab", layout="wide")
-
-st.markdown(
-    """
-    <style>
-      .stApp { background: #F7F8F6; color: #17201C; }
-      [data-testid="stSidebar"] { background: #ECEFEB; border-right: 1px solid #D7DDD8; }
-      [data-testid="stMetric"] {
-        background: #FFFFFF;
-        border: 1px solid #D7DDD8;
-        border-radius: 6px;
-        padding: 14px 16px;
-        min-height: 112px;
-      }
-      [data-testid="stMetricLabel"] { color: #59635D; }
-      div[data-testid="stDataFrame"] { border: 1px solid #D7DDD8; border-radius: 6px; }
-      .market-note {
-        color: #59635D;
-        border-left: 3px solid #B28704;
-        padding-left: 10px;
-        margin: 4px 0 18px 0;
-      }
-      .block-container { max-width: 1440px; padding-top: 2rem; padding-bottom: 3rem; }
-      h1, h2, h3 { letter-spacing: 0; }
-      @media (max-width: 1024px) {
-        .block-container { padding-left: 1rem; padding-right: 1rem; }
-        .st-key-metric-grid [data-testid="stHorizontalBlock"],
-        .st-key-risk-grid [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
-        .st-key-metric-grid [data-testid="stColumn"],
-        .st-key-risk-grid [data-testid="stColumn"] {
-          flex: 1 1 calc(50% - 0.5rem) !important;
-          min-width: calc(50% - 0.5rem) !important;
-        }
-        .st-key-metric-grid [data-testid="stMetric"],
-        .st-key-risk-grid [data-testid="stMetric"] { min-height: 104px; }
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
+st.set_page_config(
+    page_title="Quant Factor Lab",
+    page_icon=":material/query_stats:",
+    layout="wide",
 )
 
 
@@ -170,8 +135,12 @@ def pct(value: float, digits: int = 1) -> str:
     return "n/a" if pd.isna(value) else f"{value:.{digits}%}"
 
 
-st.title("Quant Factor Lab")
+st.title("Quant factor lab")
 st.caption("Cross-market factor research for China A-shares and US equities")
+with st.container(horizontal=True):
+    st.badge("Synthetic demo", icon=":material/science:", color="orange")
+    st.badge("Deterministic", icon=":material/check_circle:", color="green")
+    st.badge("Monthly", icon=":material/calendar_month:", color="gray")
 
 market = st.segmented_control(
     "Market universe",
@@ -183,10 +152,15 @@ market = market or "China A-shares"
 cfg, raw_panel = load_market(market)
 
 with st.sidebar:
-    st.header("Research controls")
+    st.header("Research controls", anchor=False)
     st.caption(MARKETS[market]["description"])
     categories = sorted({spec.category for spec in list_factors()})
-    chosen_categories = st.multiselect("Factor families", categories, default=categories)
+    chosen_categories = st.pills(
+        "Factor families",
+        categories,
+        default=categories,
+        selection_mode="multi",
+    )
     candidates = [spec.name for spec in list_factors() if spec.category in chosen_categories]
     default_factors = [factor for factor in cfg["factors"] if factor in candidates][:5]
     selected = st.multiselect("Factors", candidates, default=default_factors)
@@ -207,8 +181,13 @@ with st.sidebar:
         step=1,
         format="%d bps",
     )
-    st.divider()
     st.caption("Monthly rebalance · equal-weight selected names · zero risk-free rate")
+    st.link_button(
+        "Open audited research",
+        "https://github.com/WenqiDing-CompFin/quant-factor-research",
+        icon=":material/open_in_new:",
+        width="stretch",
+    )
 
 if not selected:
     st.info("Select at least one factor to run the research pipeline.")
@@ -220,28 +199,38 @@ benchmark = result["benchmark"]
 stats = result["strategy_stats"]
 bench_stats = result["benchmark_stats"]
 
-st.markdown(
-    f'<div class="market-note">Reproducible synthetic {MARKETS[market]["code"]} panel · '
+st.caption(
+    f'Reproducible synthetic {MARKETS[market]["code"]} panel · '
     f'{raw_panel["symbol"].nunique()} securities · {len(strategy)} monthly observations · '
-    "research demonstration, not live market data</div>",
-    unsafe_allow_html=True,
+    "not live market data"
 )
 
-with st.container(key="metric-grid"):
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric(
+with st.container(horizontal=True):
+    st.metric(
         "Annualized return",
         pct(stats["ann_return"]),
         pct(stats["ann_return"] - bench_stats["ann_return"]),
         help="Strategy CAGR; delta is versus the equal-weight universe.",
+        border=True,
     )
-    m2.metric(
+    st.metric(
         "Sharpe ratio",
         f'{stats["sharpe"]:.2f}',
         help="Annualized arithmetic return / volatility.",
+        border=True,
     )
-    m3.metric("Maximum drawdown", pct(stats["max_drawdown"]), delta_color="inverse")
-    m4.metric("Average turnover", pct(stats["avg_turnover"]), help="One-way monthly name turnover.")
+    st.metric(
+        "Maximum drawdown",
+        pct(stats["max_drawdown"]),
+        delta_color="inverse",
+        border=True,
+    )
+    st.metric(
+        "Average turnover",
+        pct(stats["avg_turnover"]),
+        help="One-way monthly name turnover.",
+        border=True,
+    )
 
 overview_tab, factors_tab, portfolio_tab, method_tab = st.tabs(
     ["Performance", "Factor diagnostics", "Portfolio & risk", "Methodology"]
@@ -289,19 +278,20 @@ with overview_tab:
 with factors_tab:
     ic_table = result["ic_table"]["mean_ic icir t_stat pos_ratio n".split()].sort_values(
         "icir", ascending=False
-    )
+    ).reset_index()
     st.subheader("Rank IC scorecard")
     st.dataframe(
-        ic_table.style.format(
-            {
-                "mean_ic": "{:+.4f}",
-                "icir": "{:+.3f}",
-                "t_stat": "{:+.2f}",
-                "pos_ratio": "{:.1%}",
-                "n": "{:.0f}",
-            }
-        ),
+        ic_table,
+        column_config={
+            "factor": st.column_config.TextColumn("Factor", pinned=True),
+            "mean_ic": st.column_config.NumberColumn("Mean IC", format="%+.4f"),
+            "icir": st.column_config.NumberColumn("ICIR", format="%+.3f"),
+            "t_stat": st.column_config.NumberColumn("t-stat", format="%+.2f"),
+            "pos_ratio": st.column_config.NumberColumn("Positive IC", format="percent"),
+            "n": st.column_config.NumberColumn("Months", format="%d"),
+        },
         width="stretch",
+        hide_index=True,
     )
 
     diag_left, diag_right = st.columns(2)
@@ -358,19 +348,22 @@ with factors_tab:
     st.plotly_chart(layer_fig, width="stretch", config={"displayModeBar": False})
 
 with portfolio_tab:
-    with st.container(key="risk-grid"):
-        r1, r2, r3, r4 = st.columns(4)
-        r1.metric("Annualized volatility", pct(stats["ann_vol"]))
-        r2.metric("Sortino ratio", f'{stats["sortino"]:.2f}')
-        r3.metric("Monthly 95% CVaR", pct(stats["monthly_cvar_95"]))
-        r4.metric("Positive months", pct(stats["positive_months"]))
+    with st.container(horizontal=True):
+        st.metric("Annualized volatility", pct(stats["ann_vol"]), border=True)
+        st.metric("Sortino ratio", f'{stats["sortino"]:.2f}', border=True)
+        st.metric("Monthly 95% CVaR", pct(stats["monthly_cvar_95"]), border=True)
+        st.metric("Positive months", pct(stats["positive_months"]), border=True)
 
     latest = result["latest"].copy()
     display_columns = ["symbol", "sector", "score_combo"] + list(selected)
     latest_display = latest[display_columns].sort_values("score_combo", ascending=False)
     st.subheader(f'Latest model portfolio · {result["latest_date"]:%Y-%m-%d}')
     st.dataframe(
-        latest_display.style.format({column: "{:+.2f}" for column in display_columns[2:]}),
+        latest_display,
+        column_config={
+            column: st.column_config.NumberColumn(format="%+.2f")
+            for column in display_columns[2:]
+        },
         width="stretch",
         hide_index=True,
     )
@@ -399,6 +392,7 @@ with portfolio_tab:
         data=export.to_csv(index=False).encode("utf-8"),
         file_name=f'{MARKETS[market]["code"].lower()}_factor_backtest.csv',
         mime="text/csv",
+        icon=":material/download:",
     )
 
 with method_tab:
@@ -426,5 +420,11 @@ with method_tab:
     st.dataframe(factor_reference, width="stretch", hide_index=True)
     st.warning(
         "Educational research only. The deployed app uses reproducible synthetic panels with planted "
-        "weak signals. Results are not live, are not forecasts, and are not investment advice."
+        "weak signals. Results are not live, are not forecasts, and are not investment advice.",
+        icon=":material/warning:",
+    )
+    st.link_button(
+        "Review official real-market evidence",
+        "https://github.com/WenqiDing-CompFin/quant-factor-research/tree/main/results/public_factors/latest",
+        icon=":material/open_in_new:",
     )
