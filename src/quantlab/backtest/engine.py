@@ -22,6 +22,10 @@ def run_long_only_backtest(
     pretrade_weights: dict[str, float] = {}
 
     for dt, g in factor_df.groupby("date"):
+        # Teaching simplification: names with a missing forward return are treated
+        # as outside the tradable universe and excluded before selection. The
+        # flagship repository deliberately raises instead, because silently
+        # dropping missing returns can hide survivor bias in real data.
         g = g.dropna(subset=[factor, ret_col])
         if g.empty:
             continue
@@ -68,7 +72,12 @@ def run_equal_weight_benchmark(
     factor_df: pd.DataFrame,
     ret_col: str = "ret_fwd_1m",
 ) -> pd.DataFrame:
-    """Return an equal-weight universe benchmark on the same monthly calendar."""
+    """Return an equal-weight universe benchmark on the same monthly calendar.
+
+    Like the strategy engine, names without a forward return are excluded from
+    the benchmark mean. This is a demo simplification; real data require an
+    explicit treatment of delistings and missing prices.
+    """
     monthly = (
         factor_df.dropna(subset=[ret_col])
         .groupby("date", sort=True)[ret_col]
@@ -78,6 +87,8 @@ def run_equal_weight_benchmark(
     )
     monthly["ret_gross"] = monthly["ret_net"]
     monthly["turnover"] = 0.0
-    monthly["n_holdings"] = factor_df.groupby("date")["symbol"].nunique()
+    monthly["n_holdings"] = monthly.index.map(
+        factor_df.dropna(subset=[ret_col]).groupby("date")["symbol"].nunique()
+    )
     monthly["nav"] = (1.0 + monthly["ret_net"]).cumprod()
     return monthly
