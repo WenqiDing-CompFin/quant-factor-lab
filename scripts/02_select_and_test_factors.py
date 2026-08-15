@@ -27,7 +27,10 @@ def main() -> None:
     print("=" * 60)
     for spec in list_factors():
         if spec.name in names:
-            print(f"[{spec.category:10}] {spec.name:16} dir={spec.direction:+d}  {spec.description_zh}")
+            print(
+                f"[{spec.category:10}] {spec.name:16} "
+                f"dir={spec.direction:+d}  {spec.description_zh}"
+            )
 
     fdf = compute_factors(panel, factor_names=names)
 

@@ -8,7 +8,9 @@ import pandas as pd
 from .catalog import FACTOR_CATALOG
 
 
-def winsorize_cross_section(s: pd.Series, lower: float = 0.025, upper: float = 0.975) -> pd.Series:
+def winsorize_cross_section(
+    s: pd.Series, lower: float = 0.025, upper: float = 0.975
+) -> pd.Series:
     lo, hi = s.quantile(lower), s.quantile(upper)
     return s.clip(lo, hi)
 
@@ -48,15 +50,20 @@ def compute_factors(
         raise ValueError(f"Unknown factors: {sorted(unknown)}")
 
     df = _prepare_raw(panel)
-    keep = ["date", "symbol", "sector", "ret_fwd_1m", "mkt_cap"] + names
-    out = df[["date", "symbol", "sector", "ret_fwd_1m", "mkt_cap"]].copy()
+    base_columns = ["date", "symbol", "sector", "ret_fwd_1m", "mkt_cap"]
+    keep = [*base_columns, *names]
+    out = df[base_columns].copy()
 
     for name in names:
         spec = FACTOR_CATALOG[name]
-        raw = df.groupby("date", group_keys=False)[name].transform(winsorize_cross_section)
+        raw = df.groupby("date", group_keys=False)[name].transform(
+            winsorize_cross_section
+        )
         if standardize:
-            z = df.assign(**{name: raw}).groupby("date", group_keys=False)[name].transform(
-                zscore_cross_section
+            z = (
+                df.assign(**{name: raw})
+                .groupby("date", group_keys=False)[name]
+                .transform(zscore_cross_section)
             )
             out[name] = z * spec.direction
         else:

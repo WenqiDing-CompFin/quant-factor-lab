@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -19,7 +19,6 @@ from quantlab.data import generate_ashare_panel, generate_us_panel
 from quantlab.factors import compute_factors
 from quantlab.portfolio import combine_factors
 from quantlab.research import factor_corr_matrix, factor_ic_series, layer_returns
-
 
 FACTORS = ["ep", "momentum_12_1", "roe", "volatility_20"]
 
@@ -80,9 +79,7 @@ def test_turnover_uses_return_drifted_weights() -> None:
             "ret_fwd_1m": [0.20, 0.0, 0.0, 0.0],
         }
     )
-    result = run_long_only_backtest(
-        frame, "score", top_quantile=1.0, cost_bps=0
-    )
+    result = run_long_only_backtest(frame, "score", top_quantile=1.0, cost_bps=0)
     assert result.iloc[0]["turnover"] == 1.0
     expected_pretrade_a = 0.6 / 1.1
     expected_pretrade_b = 0.5 / 1.1

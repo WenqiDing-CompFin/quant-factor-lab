@@ -13,15 +13,15 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from quantlab.backtest import (  # noqa: E402
+from quantlab.backtest import (
     performance_stats,
     run_equal_weight_benchmark,
     run_long_only_backtest,
 )
-from quantlab.data.loader import load_config, load_panel  # noqa: E402
-from quantlab.factors import FACTOR_CATALOG, compute_factors, list_factors  # noqa: E402
-from quantlab.portfolio import combine_factors  # noqa: E402
-from quantlab.research import (  # noqa: E402
+from quantlab.data.loader import load_config, load_panel
+from quantlab.factors import FACTOR_CATALOG, compute_factors, list_factors
+from quantlab.portfolio import combine_factors
+from quantlab.research import (
     factor_corr_matrix,
     factor_ic_series,
     layer_returns,
@@ -161,14 +161,16 @@ with st.sidebar:
         default=categories,
         selection_mode="multi",
     )
-    candidates = [spec.name for spec in list_factors() if spec.category in chosen_categories]
+    candidates = [
+        spec.name for spec in list_factors() if spec.category in chosen_categories
+    ]
     default_factors = [factor for factor in cfg["factors"] if factor in candidates][:5]
     selected = st.multiselect("Factors", candidates, default=default_factors)
     top_percent = st.slider(
         "Portfolio size",
         min_value=10,
         max_value=40,
-        value=int(round(float(cfg["top_quantile"]) * 100)),
+        value=round(float(cfg["top_quantile"]) * 100),
         step=5,
         format="Top %d%%",
     )
@@ -200,8 +202,9 @@ stats = result["strategy_stats"]
 bench_stats = result["benchmark_stats"]
 
 st.caption(
-    f'Reproducible synthetic {MARKETS[market]["code"]} panel · '
-    f'{raw_panel["symbol"].nunique()} securities · {len(strategy)} monthly observations · '
+    f"Reproducible synthetic {MARKETS[market]['code']} panel · "
+    f"{raw_panel['symbol'].nunique()} securities · "
+    f"{len(strategy)} monthly observations · "
     "not live market data"
 )
 
@@ -215,7 +218,7 @@ with st.container(horizontal=True):
     )
     st.metric(
         "Sharpe ratio",
-        f'{stats["sharpe"]:.2f}',
+        f"{stats['sharpe']:.2f}",
         help="Annualized arithmetic return / volatility.",
         border=True,
     )
@@ -256,7 +259,9 @@ with overview_tab:
             line={"color": COLORS["benchmark"], "width": 2, "dash": "dot"},
         )
     )
-    nav_fig.update_layout(**_plot_layout("Cumulative net asset value", "Growth of 1.00"))
+    nav_fig.update_layout(
+        **_plot_layout("Cumulative net asset value", "Growth of 1.00")
+    )
     st.plotly_chart(nav_fig, width="stretch", config={"displayModeBar": False})
 
     dd_fig = go.Figure()
@@ -276,9 +281,11 @@ with overview_tab:
     st.plotly_chart(dd_fig, width="stretch", config={"displayModeBar": False})
 
 with factors_tab:
-    ic_table = result["ic_table"]["mean_ic icir t_stat pos_ratio n".split()].sort_values(
-        "icir", ascending=False
-    ).reset_index()
+    ic_table = (
+        result["ic_table"][["mean_ic", "icir", "t_stat", "pos_ratio", "n"]]
+        .sort_values("icir", ascending=False)
+        .reset_index()
+    )
     st.subheader("Rank IC scorecard")
     st.dataframe(
         ic_table,
@@ -297,7 +304,12 @@ with factors_tab:
     diag_left, diag_right = st.columns(2)
     with diag_left:
         ic_fig = go.Figure()
-        palette = [COLORS["strategy"], COLORS["benchmark"], COLORS["gold"], COLORS["neutral"]]
+        palette = [
+            COLORS["strategy"],
+            COLORS["benchmark"],
+            COLORS["gold"],
+            COLORS["neutral"],
+        ]
         for index, factor in enumerate(result["ic_series"].columns):
             ic_fig.add_trace(
                 go.Scatter(
@@ -343,21 +355,25 @@ with factors_tab:
             hovertemplate="%{x}: %{y:.2%}<extra></extra>",
         )
     )
-    layer_fig.update_layout(**_plot_layout(f"Forward return by {layer_factor} quantile", "Mean monthly return"))
+    layer_fig.update_layout(
+        **_plot_layout(
+            f"Forward return by {layer_factor} quantile", "Mean monthly return"
+        )
+    )
     layer_fig.update_yaxes(tickformat=".1%")
     st.plotly_chart(layer_fig, width="stretch", config={"displayModeBar": False})
 
 with portfolio_tab:
     with st.container(horizontal=True):
         st.metric("Annualized volatility", pct(stats["ann_vol"]), border=True)
-        st.metric("Sortino ratio", f'{stats["sortino"]:.2f}', border=True)
+        st.metric("Sortino ratio", f"{stats['sortino']:.2f}", border=True)
         st.metric("Monthly 95% CVaR", pct(stats["monthly_cvar_95"]), border=True)
         st.metric("Positive months", pct(stats["positive_months"]), border=True)
 
     latest = result["latest"].copy()
-    display_columns = ["symbol", "sector", "score_combo"] + list(selected)
+    display_columns = ["symbol", "sector", "score_combo", *selected]
     latest_display = latest[display_columns].sort_values("score_combo", ascending=False)
-    st.subheader(f'Latest model portfolio · {result["latest_date"]:%Y-%m-%d}')
+    st.subheader(f"Latest model portfolio · {result['latest_date']:%Y-%m-%d}")
     st.dataframe(
         latest_display,
         column_config={
@@ -390,7 +406,7 @@ with portfolio_tab:
     st.download_button(
         "Download backtest CSV",
         data=export.to_csv(index=False).encode("utf-8"),
-        file_name=f'{MARKETS[market]["code"].lower()}_factor_backtest.csv',
+        file_name=f"{MARKETS[market]['code'].lower()}_factor_backtest.csv",
         mime="text/csv",
         icon=":material/download:",
     )
@@ -399,10 +415,12 @@ with method_tab:
     st.subheader("Research pipeline")
     st.markdown(
         "**Economic hypothesis → winsorization → cross-sectional z-score → Rank IC → "
-        "quantile sorts → factor correlation → equal-weight composite → cost-aware backtest**"
+        "quantile sorts → factor correlation → equal-weight composite → "
+        "cost-aware backtest**"
     )
     st.caption(
-        "Scores are direction-aligned, so a higher value always means a higher expected return. "
+        "Scores are direction-aligned, so a higher value always means a higher "
+        "expected return. "
         "The portfolio holds the top cross-sectional quantile and rebalances monthly."
     )
 
@@ -412,15 +430,18 @@ with method_tab:
                 "factor": name,
                 "family": FACTOR_CATALOG[name].category,
                 "definition": FACTOR_CATALOG[name].description_en,
-                "preferred direction": "higher" if FACTOR_CATALOG[name].direction > 0 else "lower",
+                "preferred direction": "higher"
+                if FACTOR_CATALOG[name].direction > 0
+                else "lower",
             }
             for name in selected
         ]
     )
     st.dataframe(factor_reference, width="stretch", hide_index=True)
     st.warning(
-        "Educational research only. The deployed app uses reproducible synthetic panels with planted "
-        "weak signals. Results are not live, are not forecasts, and are not investment advice.",
+        "Educational research only. The deployed app uses reproducible synthetic "
+        "panels with planted weak signals. Results are not live, are not forecasts, "
+        "and are not investment advice.",
         icon=":material/warning:",
     )
     st.link_button(

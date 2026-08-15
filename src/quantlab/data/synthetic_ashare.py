@@ -12,7 +12,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-
 SECTORS = ["银行", "白酒", "新能源", "医药", "电子", "地产", "基建", "消费"]
 
 
@@ -31,7 +30,9 @@ def generate_ashare_panel(
     """
     rng = np.random.default_rng(seed)
     dates = pd.date_range(start_date, end_date, freq="ME")
-    symbols = [f"{i:06d}.SZ" if i % 2 == 0 else f"{i:06d}.SH" for i in range(1, n_stocks + 1)]
+    symbols = [
+        f"{i:06d}.SZ" if i % 2 == 0 else f"{i:06d}.SH" for i in range(1, n_stocks + 1)
+    ]
 
     rows: list[dict] = []
     # Latent true exposures that drive returns (oracle — for teaching only)

@@ -146,11 +146,14 @@ streamlit run streamlit_app.py
 ### Run the tests
 
 ```bash
-pytest
+python -m pytest -q
+ruff check .
+ruff format --check .
 ```
 
 The test suite exercises both markets end to end, checks factor diagnostics, and verifies that
-transaction costs reduce terminal NAV.
+transaction costs reduce terminal NAV. The lint commands are part of CI and keep the
+research scripts, package code, and dashboard formatted consistently.
 
 ### Run the research scripts
 
@@ -170,9 +173,13 @@ python scripts/us_03_multi_factor_backtest.py
 
 ```text
 quant-factor-lab/
+|-- .github/workflows/ci.yml # Lint, format, and test pipeline
 |-- streamlit_app.py          # Unified interactive dashboard
 |-- configs/                  # Market-specific research settings
 |-- data/sample/              # Reproducible sample panels
+|-- environment.yml           # Conda reproduction
+|-- pyproject.toml            # Package metadata and dev tooling
+|-- requirements.txt          # Runtime dependencies
 |-- scripts/                  # A-share and US research entrypoints
 |-- src/quantlab/
 |   |-- data/                 # Data facade and synthetic generators

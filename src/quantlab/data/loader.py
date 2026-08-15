@@ -16,7 +16,9 @@ def load_config(path: str | Path) -> dict:
         return yaml.safe_load(f)
 
 
-def load_panel(config_path: str | Path | None = None, source: str = "synthetic") -> pd.DataFrame:
+def load_panel(
+    config_path: str | Path | None = None, source: str = "synthetic"
+) -> pd.DataFrame:
     """Load a research panel.
 
     Parameters
@@ -29,7 +31,9 @@ def load_panel(config_path: str | Path | None = None, source: str = "synthetic")
     market = str(cfg.get("market", "ashare")).lower()
 
     if source == "csv":
-        csv_name = "panel_us.csv" if market in {"us", "usa", "us_equity"} else "panel.csv"
+        csv_name = (
+            "panel_us.csv" if market in {"us", "usa", "us_equity"} else "panel.csv"
+        )
         csv_path = Path("data/sample") / csv_name
         if not csv_path.exists():
             raise FileNotFoundError(

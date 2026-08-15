@@ -19,7 +19,9 @@ def performance_stats(bt: pd.DataFrame, ret_col: str = "ret_net") -> dict:
     dd = nav / nav.cummax() - 1.0
     max_dd = float(dd.min())
     downside = r[r < 0]
-    downside_vol = float(downside.std(ddof=1) * np.sqrt(12)) if len(downside) > 1 else np.nan
+    downside_vol = (
+        float(downside.std(ddof=1) * np.sqrt(12)) if len(downside) > 1 else np.nan
+    )
     sortino = float(r.mean() * 12 / downside_vol) if downside_vol > 0 else np.nan
     calmar = float(ann_ret / abs(max_dd)) if max_dd < 0 else np.nan
     var_95 = float(r.quantile(0.05))
@@ -36,5 +38,5 @@ def performance_stats(bt: pd.DataFrame, ret_col: str = "ret_net") -> dict:
         "monthly_cvar_95": float(tail.mean()) if not tail.empty else np.nan,
         "positive_months": float((r > 0).mean()),
         "avg_turnover": float(bt["turnover"].mean()) if "turnover" in bt else np.nan,
-        "n_months": int(len(r)),
+        "n_months": len(r),
     }

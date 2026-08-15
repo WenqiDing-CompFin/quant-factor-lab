@@ -14,7 +14,12 @@ sys.path.insert(0, str(ROOT / "src"))
 from quantlab.backtest import performance_stats, run_long_only_backtest
 from quantlab.data.loader import load_config, load_panel
 from quantlab.factors import FACTOR_CATALOG, compute_factors, list_factors
-from quantlab.research import factor_corr_matrix, factor_ic_series, layer_returns, summarize_ic
+from quantlab.research import (
+    factor_corr_matrix,
+    factor_ic_series,
+    layer_returns,
+    summarize_ic,
+)
 
 
 def main() -> None:

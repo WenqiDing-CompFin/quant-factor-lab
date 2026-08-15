@@ -11,12 +11,16 @@ def _rank_ic(x: pd.Series, y: pd.Series) -> float:
     if len(usable) < 5:
         return np.nan
     # Spearman correlation is Pearson correlation of the two within-date ranks.
-    return float(usable.iloc[:, 0].rank(method="average").corr(
-        usable.iloc[:, 1].rank(method="average")
-    ))
+    return float(
+        usable.iloc[:, 0]
+        .rank(method="average")
+        .corr(usable.iloc[:, 1].rank(method="average"))
+    )
 
 
-def factor_ic_series(factor_df: pd.DataFrame, factor: str, ret_col: str = "ret_fwd_1m") -> pd.Series:
+def factor_ic_series(
+    factor_df: pd.DataFrame, factor: str, ret_col: str = "ret_fwd_1m"
+) -> pd.Series:
     """Cross-sectional Rank IC each date: corr(rank(factor), rank(forward return))."""
     ic = pd.Series(
         {

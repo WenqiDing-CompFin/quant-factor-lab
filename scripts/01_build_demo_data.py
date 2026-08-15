@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from quantlab.data.loader import load_config, load_panel
+from quantlab.data.loader import load_panel
 
 
 def main() -> None:

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
 
 
@@ -22,7 +21,9 @@ def layer_returns(
         tmp = g.assign(layer=q)
         return tmp.groupby("layer")[ret_col].mean()
 
-    layered = factor_df.groupby("date", group_keys=True).apply(_one, include_groups=False)
+    layered = factor_df.groupby("date", group_keys=True).apply(
+        _one, include_groups=False
+    )
     if isinstance(layered, pd.Series):
         layered = layered.unstack("layer")
     layered.columns = [f"Q{int(c) + 1}" for c in layered.columns]
