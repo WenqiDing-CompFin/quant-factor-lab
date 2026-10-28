@@ -20,15 +20,17 @@ def run_long_only_backtest(
     """
     records = []
     pretrade_weights: dict[str, float] = {}
+    final_date = factor_df["date"].max()
 
     for dt, g in factor_df.groupby("date"):
-        # Teaching simplification: names with a missing forward return are treated
-        # as outside the tradable universe and excluded before selection. The
-        # flagship repository deliberately raises instead, because silently
-        # dropping missing returns can hide survivor bias in real data.
-        g = g.dropna(subset=[factor, ret_col])
+        # Eligibility may depend on the signal, never on its future outcome.
+        g = g.dropna(subset=[factor])
         if g.empty:
             continue
+        if g[ret_col].isna().all() and dt == final_date:
+            continue
+        if g[ret_col].isna().any():
+            raise ValueError(f"Missing forward returns among eligible names on {dt}")
         k = max(1, int(np.ceil(len(g) * top_quantile)))
         selected = g.nlargest(k, factor)[["symbol", ret_col]].copy()
         target_weight = 1.0 / k
@@ -74,10 +76,16 @@ def run_equal_weight_benchmark(
 ) -> pd.DataFrame:
     """Return an equal-weight universe benchmark on the same monthly calendar.
 
-    Like the strategy engine, names without a forward return are excluded from
-    the benchmark mean. This is a demo simplification; real data require an
-    explicit treatment of delistings and missing prices.
+    Reject missing forward returns instead of selecting the universe using
+    future information. A fully unobserved final period is omitted.
     """
+    final_date = factor_df["date"].max()
+    missing = factor_df[ret_col].isna()
+    final = factor_df["date"].eq(final_date)
+    if missing.any() and not (missing & final).sum() == missing.sum():
+        raise ValueError("Missing forward returns in a non-final benchmark period")
+    if missing.any() and not missing[final].all():
+        raise ValueError("Missing forward returns among final-period benchmark names")
     monthly = (
         factor_df.dropna(subset=[ret_col])
         .groupby("date", sort=True)[ret_col]

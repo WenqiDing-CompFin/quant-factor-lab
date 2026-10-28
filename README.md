@@ -195,6 +195,9 @@ quant-factor-lab/
 
 - Fixed random seeds make both market panels deterministic.
 - Forward returns are kept separate from the factor transformation pipeline.
+- Missing forward returns for eligible names raise an error instead of silently
+  selecting the universe using future outcomes; a fully unobserved final period
+  is omitted.
 - Factor direction is explicit and tested before combination.
 - Turnover and transaction costs are reported rather than ignored.
 - The benchmark shares the strategy's monthly calendar and universe.
@@ -205,6 +208,7 @@ quant-factor-lab/
 | Current boundary | Natural extension |
 |---|---|
 | Synthetic panels only | Add licensed or public production data adapters |
+| No point-in-time universe or delisting treatment | Validate historical membership and explicit missing-price handling before real-data use |
 | Equal-weight factor blend | Compare IC-weighted, shrinkage, and risk-aware combinations |
 | No sector or size neutralization | Add cross-sectional residualization and exposure constraints |
 | Simple turnover cost proxy | Model spread, market impact, and capacity |

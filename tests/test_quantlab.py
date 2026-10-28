@@ -87,3 +87,31 @@ def test_turnover_uses_return_drifted_weights() -> None:
         abs(0.5 - expected_pretrade_a) + abs(0.5 - expected_pretrade_b)
     )
     assert result.iloc[1]["turnover"] == pytest.approx(expected_turnover)
+
+
+def test_strategy_rejects_missing_future_return_before_selection() -> None:
+    frame = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2020-01-31"] * 2 + ["2020-02-29"] * 2),
+            "symbol": ["A", "B", "A", "B"],
+            "score": [2.0, 1.0, 2.0, 1.0],
+            "ret_fwd_1m": [np.nan, 0.01, 0.0, 0.0],
+        }
+    )
+    with pytest.raises(ValueError, match="Missing forward returns"):
+        run_long_only_backtest(frame, "score")
+    with pytest.raises(ValueError, match="Missing forward returns"):
+        run_equal_weight_benchmark(frame)
+
+
+def test_fully_missing_final_period_is_not_scored() -> None:
+    frame = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2020-01-31"] * 2 + ["2020-02-29"] * 2),
+            "symbol": ["A", "B", "A", "B"],
+            "score": [2.0, 1.0, 2.0, 1.0],
+            "ret_fwd_1m": [0.01, 0.02, np.nan, np.nan],
+        }
+    )
+    assert len(run_long_only_backtest(frame, "score")) == 1
+    assert len(run_equal_weight_benchmark(frame)) == 1
